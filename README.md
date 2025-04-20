@@ -1,39 +1,33 @@
-# vcos_components_runtime
+# vcos_components_runtime代码仓库说明
 
-#### 介绍
-{**以下是 Gitee 平台说明，您可以替换此简介**
-Gitee 是 OSCHINA 推出的基于 Git 的代码托管平台（同时支持 SVN）。专为开发者提供稳定、高效、安全的云端软件开发协作平台
-无论是个人、团队、或是企业，都能够用 Gitee 实现代码托管、项目管理、协作开发。企业项目请看 [https://gitee.com/enterprises](https://gitee.com/enterprises)}
+## 1. 代码仓库简介
+vcos_components_runtime为VCOS提供的应用运行时环境，包含应用间及应用和中间件、Os间的通信接口、应用软件调度管理
+主要提供以下功能：
+- 通信栈PDU及多核部署配置支持
+- 分区和Core信息配置
+- 应用软件间的SR、CS、mode switch同核和跨核通信接口
+- 应用软件和中间件、OS间的通信接口
+- 应用软件间的internal、external trigger接口
+- 应用软件的调度管理，支持调度表和基于alarm的调度
 
-#### 软件架构
-软件架构说明
+## 2. 代码目录
+vcos_components_runtime源代码在haloosspace/vcos/components/runtime目录下，目录结构如下图所示：
+```
+runtime                 # VCOS为应用软件提供的运行时环境
+├── EcuC                # EcuC模块实现，只包含配置项、校验规则，无动态代码
+│   └── config_plug_in  # EcuC模块的configurator工具配置插件，支持UI配置和校验
+├── README.md           # vcos_components_runtime的说明文档，主要讲解vcos_components_runtime包含的功能特性及目录结构说明（即本文）
+└── Rte                 # Rte模块实现，为应用软件提供运行时环境
+    └── config_plug_in  # Rte模块的configurator工具配置插件，支持UI配置和校验规则，推理和动态代码生成在configurator中实现
+```
 
+## 3. 仓库使用入门
+该仓库中包含的Rte模块和EcuC模块支持在configurator工具中配置，需要在configurator工具添加该模块并进行配置、校验通过并生成动态代码后，才会在生成动态代码的CMakeLists.txt中打开该模块的编译开关 configurator工具的使用请参考[配置工具开发者手册](https://gitee.com/haloos/vcos/blob/master/user_manual/studio/configurator_tool_user_manual.md)
 
-#### 安装教程
+EcuC模块主要功能包含：
+- 支持Os模块的核和分区相关信息配置
+- 支持通信栈各模块间PDU的映射关系配置，并为通信栈的多核部署提供相应的配置参数
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+EcuC模块详细的配置参数说明参考[EcuC模块配置项说明](https://gitee.com/haloos/vcos/blob/master/configuration_reference/ecuc_cfg.md)。EcuC仅为通信栈和Os提供辅助配置信息，没有静态代码，也不生产动态代码，因此需要参与编译
 
-#### 使用说明
-
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### 参与贡献
-
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
-
-
-#### 特技
-
-1.  使用 Readme\_XXX.md 来支持不同的语言，例如 Readme\_en.md, Readme\_zh.md
-2.  Gitee 官方博客 [blog.gitee.com](https://blog.gitee.com)
-3.  你可以 [https://gitee.com/explore](https://gitee.com/explore) 这个地址来了解 Gitee 上的优秀开源项目
-4.  [GVP](https://gitee.com/gvp) 全称是 Gitee 最有价值开源项目，是综合评定出的优秀开源项目
-5.  Gitee 官方提供的使用手册 [https://gitee.com/help](https://gitee.com/help)
-6.  Gitee 封面人物是一档用来展示 Gitee 会员风采的栏目 [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+Rte模块根据ASW runnable和BSW schedule entity的task mapping信息，以及port连接信息进行推理，生成实时运行环境。因此，Rte模块没有静态代码，只在configurator工具中推理和生成动态代码。Rte模块的使用参考[配置工具开发者手册](https://gitee.com/haloos/vcos/blob/master/user_manual/studio/configurator_tool_user_manual.md) 4.2.4节内容。Rte模块详细的配置参数说明参考[Rte模块配置项说明](https://gitee.com/haloos/vcos/blob/master/configuration_reference/rte_cfg.md)
