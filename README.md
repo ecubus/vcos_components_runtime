@@ -1,12 +1,12 @@
 # vcos_components_runtime代码仓库说明
 
 ## 1. 代码仓库简介
-vcos_components_runtime为VCOS提供的应用运行时环境，包含应用间及应用和中间件、Os间的通信接口、应用软件调度管理
+vcos_components_runtime为VCOS提供的应用运行时环境，包含应用间及应用和系统功能组件、OS间的通信接口、应用软件调度管理
 主要提供以下功能：
 - 通信栈PDU及多核部署配置支持
 - 分区和Core信息配置
 - 应用软件间的SR、CS、mode switch同核和跨核通信接口
-- 应用软件和中间件、OS间的通信接口
+- 应用软件和系统功能组件、OS间的通信接口
 - 应用软件间的internal、external trigger接口
 - 应用软件的调度管理，支持调度表和基于alarm的调度
 
@@ -28,6 +28,6 @@ EcuC模块主要功能包含：
 - 支持Os模块的核和分区相关信息配置
 - 支持通信栈各模块间PDU的映射关系配置，并为通信栈的多核部署提供相应的配置参数
 
-EcuC模块详细的配置参数说明参考[EcuC模块配置项说明](https://gitee.com/haloos/vcos/blob/master/configuration_reference/ecuc_cfg.md)。EcuC仅为通信栈和Os提供辅助配置信息，没有静态代码，也不生产动态代码，因此需要参与编译
+EcuC模块详细的配置参数说明参考[EcuC模块配置项说明](https://gitee.com/haloos/vcos/blob/master/configuration_reference/ecuc_cfg.md)。EcuC仅为通信栈和Os提供辅助配置信息，不包含静态或动态源代码，因此本模块不需参与编译
 
 Rte模块根据ASW runnable和BSW schedule entity的task mapping信息，以及port连接信息进行推理，生成实时运行环境。因此，Rte模块没有静态代码，只在configurator工具中推理和生成动态代码。Rte模块的使用参考[配置工具开发者手册](https://gitee.com/haloos/vcos/blob/master/user_manual/studio/configurator_tool_user_manual.md) 4.2.4节内容。Rte模块详细的配置参数说明参考[Rte模块配置项说明](https://gitee.com/haloos/vcos/blob/master/configuration_reference/rte_cfg.md)
