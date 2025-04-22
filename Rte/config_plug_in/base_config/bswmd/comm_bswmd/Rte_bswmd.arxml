@@ -312,9 +312,7 @@
                           </DESC>
                           <INTRODUCTION>
                             <P>
-                              <L-1 L="EN">For periodic activation this is the order of execution.
-                                                For event driver activation this is the order of evaluation which actual BswSchedulableEntity has to be executed.
-                                                In case of direct function calls this parameter is necessary to provide an ordering of events when several ExecutableEntities are invoked by the same RTE API.</L-1>
+                              <L-1 L="ZH">该配置项指定了BswSchedulableEntity在所属任务中的执行顺序。</L-1>
                             </P>
                           </INTRODUCTION>
                           <RELATED-TRACE-ITEM-REF BASE="ArTrace" DEST="TRACEABLE">ECUC_Rte_09068</RELATED-TRACE-ITEM-REF>
@@ -514,7 +512,7 @@
                           </DESC>
                           <INTRODUCTION>
                             <P>
-                              <L-1 L="EN">If no reference to the OsTask is specified the BswSchedulableEntity activated by this BswEvent is executed in the context of the caller.</L-1>
+                              <L-1 L="ZH">如果没有指定OsTask，则该实体是调用方直接函数调用的方式执行的。</L-1>
                             </P>
                           </INTRODUCTION>
                           <RELATED-TRACE-ITEM-REF BASE="ArTrace" DEST="TRACEABLE">ECUC_Rte_09067</RELATED-TRACE-ITEM-REF>
@@ -664,7 +662,7 @@
                           </DESC>
                           <INTRODUCTION>
                             <P>
-                              <L-1 L="EN">This routine gets invoked directly before the ExecutableEntity is started.</L-1>
+                              <L-1 L="EN"/>
                             </P>
                           </INTRODUCTION>
                           <RELATED-TRACE-ITEM-REF BASE="ArTrace" DEST="TRACEABLE">ECUC_Rte_89005</RELATED-TRACE-ITEM-REF>
@@ -705,7 +703,7 @@
                           </DESC>
                           <INTRODUCTION>
                             <P>
-                              <L-1 L="EN">This routine gets invoked directly after the ExecutableEntity has terminated.</L-1>
+                              <L-1 L="EN"/>
                             </P>
                           </INTRODUCTION>
                           <RELATED-TRACE-ITEM-REF BASE="ArTrace" DEST="TRACEABLE">ECUC_Rte_89006</RELATED-TRACE-ITEM-REF>
@@ -1766,8 +1764,7 @@
                       </DESC>
                       <INTRODUCTION>
                         <P>
-                          <L-1 L="EN">* true: CompuMethodGen is enable.
-                                        * false: CompuMethodGen is disabled.</L-1>
+                          <L-1 L="ZH">true代表功能启用。false代表功能禁用。</L-1>
                         </P>
                       </INTRODUCTION>
                       <LOWER-MULTIPLICITY>1</LOWER-MULTIPLICITY>
@@ -1797,8 +1794,7 @@
                       </DESC>
                       <INTRODUCTION>
                         <P>
-                          <L-1 L="EN">* true: simplification is enabled.
-                                        * false: no simplification.</L-1>
+                          <L-1 L="ZH">true代表功能启用。false代表功能禁用。</L-1>
                         </P>
                       </INTRODUCTION>
                       <LOWER-MULTIPLICITY>1</LOWER-MULTIPLICITY>
@@ -1830,8 +1826,7 @@ WARNING: if optimization is enabled, do NOT invoke any RTE APIs inside an ISR (e
                       </DESC>
                       <INTRODUCTION>
                         <P>
-                          <L-1 L="EN">* true: optimization is enabled.
-                                        * false: no optimization.</L-1>
+                          <L-1 L="ZH">true代表功能启用。false代表功能禁用。</L-1>
                         </P>
                       </INTRODUCTION>
                       <LOWER-MULTIPLICITY>1</LOWER-MULTIPLICITY>
@@ -1861,8 +1856,7 @@ WARNING: if optimization is enabled, do NOT invoke any RTE APIs inside an ISR (e
                       </DESC>
                       <INTRODUCTION>
                         <P>
-                          <L-1 L="EN">* true: detection and notification is enabled.
-                                        * false: detection and notification is disabled.</L-1>
+                          <L-1 L="ZH">true代表功能启用。false代表功能禁用。</L-1>
                         </P>
                       </INTRODUCTION>
                       <RELATED-TRACE-ITEM-REF BASE="ArTrace" DEST="TRACEABLE">ECUC_Rte_09008</RELATED-TRACE-ITEM-REF>
@@ -2273,9 +2267,7 @@ WARNING: if optimization is enabled, do NOT invoke any RTE APIs inside an ISR (e
                       </DESC>
                       <INTRODUCTION>
                         <P>
-                          <L-1 L="EN">Example: #define Rte_WriteHook_i1_p1_a_Start
-
-                                        This also applies to VFB trace functions with a RteVfbTraceClientPrefix, e.g. Rte_Dbg_WriteHook_I1_P1_a_Start.</L-1>
+                          <L-1 L="ZH">该参数服务于halo trace工具，通过RteVFB trace hook function可以为每个 Runable 生成打点函数(Rte_Runnable_(runnable_name)_Start 与 Rte_Runnable_(runnable_name)_Return)，用以确定runnable的执行时间</L-1>
                         </P>
                       </INTRODUCTION>
                       <RELATED-TRACE-ITEM-REF BASE="ArTrace" DEST="TRACEABLE">ECUC_Rte_09017</RELATED-TRACE-ITEM-REF>
@@ -3421,7 +3413,7 @@ WARNING: if optimization is enabled, do NOT invoke any RTE APIs inside an ISR (e
                   </DESC>
                   <INTRODUCTION>
                     <P>
-                      <L-1 L="EN">The RteSwComponentInstance can be associated with either a  AtomicSwComponentType or ParameterSwComponentType.</L-1>
+                      <L-1 L="ZH">该配置项可以归属于AtomicSwComponentType或ParameterSwComponentType两种类型。</L-1>
                     </P>
                   </INTRODUCTION>
                   <RELATED-TRACE-ITEM-REF BASE="ArTrace" DEST="TRACEABLE">ECUC_Rte_09005</RELATED-TRACE-ITEM-REF>
@@ -3475,7 +3467,7 @@ WARNING: if optimization is enabled, do NOT invoke any RTE APIs inside an ISR (e
                       </DESC>
                       <INTRODUCTION>
                         <P>
-                          <L-1 L="EN">In the case of a RunnableEntity executed via a direct function call this RteEventToTaskMapping is still specified but no RteMappedToTask element is included. The RtePositionInTask parameter is necessary to provide an ordering of events invoked by the same RTE API.</L-1>
+                          <L-1 L="ZH">如果RunnableEntity是通过直接的函数调用的，则该配置项仍存在，但是没有RteMappedToTask元素。</L-1>
                         </P>
                       </INTRODUCTION>
                       <RELATED-TRACE-ITEM-REF BASE="ArTrace" DEST="TRACEABLE">ECUC_Rte_09020</RELATED-TRACE-ITEM-REF>
@@ -3628,9 +3620,7 @@ WARNING: if optimization is enabled, do NOT invoke any RTE APIs inside an ISR (e
                           </DESC>
                           <INTRODUCTION>
                             <P>
-                              <L-1 L="EN">For periodic activation this is the order of execution.
-                                                For event driver activation this is the order of evaluation which actual RunnableEntity has to be executed.
-                                                In case of direct function calls this parameter is necessary to provide an ordering of events when several ExecutableEntities are invoked by the same RTE API.</L-1>
+                              <L-1 L="ZH">该配置项指定了RunnableEntity在所属任务中的执行顺序。</L-1>
                             </P>
                           </INTRODUCTION>
                           <RELATED-TRACE-ITEM-REF BASE="ArTrace" DEST="TRACEABLE">ECUC_Rte_09023</RELATED-TRACE-ITEM-REF>
@@ -3830,9 +3820,7 @@ WARNING: if optimization is enabled, do NOT invoke any RTE APIs inside an ISR (e
                           </DESC>
                           <INTRODUCTION>
                             <P>
-                              <L-1 L="EN">If no reference to the OsTask is specified the RunnableEntity shall be executed via a direct function call.
-
-                                                The fact that no reference to an OsTask is specified for a RunnableEntity does not necessarily imply that every RTE generator has to support the implementation of this RunnableEntity as a direct function call. The standard set of use cases for direct function calls that has to be supported by every RTE generator is explicitly stated as requirements in this document. For further optimization RTE vendors are free to support additional scenarios of direct function call implementations that are not explicitly required in this document.</L-1>
+                              <L-1 L="ZH">如果没有指定OsTask，则该实体是调用方直接函数调用的方式执行的。</L-1>
                             </P>
                           </INTRODUCTION>
                           <RELATED-TRACE-ITEM-REF BASE="ArTrace" DEST="TRACEABLE">ECUC_Rte_09021</RELATED-TRACE-ITEM-REF>
