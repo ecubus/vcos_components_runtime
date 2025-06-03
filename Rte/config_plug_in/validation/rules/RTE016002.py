@@ -14,7 +14,7 @@
 # limitations under the License.
 ############################################################################
 from func_module.validation.common.basic_rule import BasicRule, timing_decorator
-from Rte.config_plug_in.validation.rules.Rte_common import RteCommonData
+from .Rte_common import RteCommonData
 from func_module.validation.common.validation_def import ValidationData
 from basic_func_module.autosar_utils.utils import (get_definition_ref, get_value_ref, get_numerical_param_value,
                                               get_annotations, get_short_name)

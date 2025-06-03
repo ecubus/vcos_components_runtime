@@ -1,8 +1,10 @@
 # vcos_components_runtime代码仓库说明
 
 ## 1. 代码仓库简介
+
 vcos_components_runtime为VCOS提供的应用运行时环境，包含应用间及应用和系统功能组件、OS间的通信接口、应用软件调度管理
 主要提供以下功能：
+
 - 通信栈PDU及多核部署配置支持
 - 分区和Core信息配置
 - 应用软件间的SR、CS、mode switch同核和跨核通信接口
@@ -11,8 +13,10 @@ vcos_components_runtime为VCOS提供的应用运行时环境，包含应用间�
 - 应用软件的调度管理，支持调度表和基于alarm的调度
 
 ## 2. 代码目录
+
 vcos_components_runtime源代码在haloosspace/vcos/components/runtime目录下，目录结构如下图所示：
-```
+
+```text
 runtime                 # VCOS为应用软件提供的运行时环境
 ├── EcuC                # EcuC模块实现，只包含配置项、校验规则，无动态代码
 │   └── config_plug_in  # EcuC模块的configurator工具配置插件，支持UI配置和校验
@@ -22,9 +26,11 @@ runtime                 # VCOS为应用软件提供的运行时环境
 ```
 
 ## 3. 仓库使用入门
+
 该仓库中包含的Rte模块和EcuC模块支持在configurator工具中配置，需要在configurator工具添加该模块并进行配置、校验通过并生成动态代码后，才会在生成动态代码的CMakeLists.txt中打开该模块的编译开关 configurator工具的使用请参考[配置工具开发者手册](https://gitee.com/haloos/vcos/blob/master/user_manual/studio/configurator_tool_user_manual.md)
 
 EcuC模块主要功能包含：
+
 - 支持Os模块的核和分区相关信息配置
 - 支持通信栈各模块间PDU的映射关系配置，并为通信栈的多核部署提供相应的配置参数
 

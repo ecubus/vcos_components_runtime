@@ -17,7 +17,7 @@ from func_module.validation.common.basic_rule import BasicRule, timing_decorator
 from durable.lang import *
 from durable.engine import *
 from basic_func_module.autosar_utils.utils import get_short_name
-from Rte.config_plug_in.validation.rules.Rte_common import RteCommonData
+from .Rte_common import RteCommonData
 from func_module.validation.common.validation_def import ValidationData
 
 

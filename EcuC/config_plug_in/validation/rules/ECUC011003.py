@@ -67,7 +67,7 @@ class EcuC011003Rule(BasicRule):
                 continue
             if partition.get("DefinitionRef", "").split("/")[-1] != "EcucPartition":
                 continue
-            if partition.get("EcucPartitionBswModuleExecution", {}).get("Value", False) is True:
+            if partition.get("EcucPartitionBswModuleExecution", {}).get("Value", False) is not True:
                 continue
 
             base_path = "/ActiveEcuC/EcuC/EcucPartitionCollection"

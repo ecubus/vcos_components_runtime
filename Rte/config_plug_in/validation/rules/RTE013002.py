@@ -17,7 +17,7 @@ from func_module.validation.common.basic_rule import BasicRule, timing_decorator
 from durable.lang import *
 from durable.engine import *
 from func_module.validation.common.validation_def import ValidationData
-from Rte.config_plug_in.validation.rules.Rte_common import RteCommonData, RteUtils
+from .Rte_common import RteCommonData, RteUtils
 
 
 # 互斥校验：要求Application Components中的SWC中至少有一个runnable是mapped状态

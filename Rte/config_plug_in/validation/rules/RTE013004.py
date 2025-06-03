@@ -17,7 +17,7 @@ from func_module.validation.common.basic_rule import BasicRule, timing_decorator
 from durable.lang import *
 from durable.engine import *
 from func_module.health_monitor.logger import logger
-from Rte.config_plug_in.validation.rules.Rte_common import RteCommonData
+from .Rte_common import RteCommonData
 from func_module.validation.common.validation_def import ValidationData
 
 

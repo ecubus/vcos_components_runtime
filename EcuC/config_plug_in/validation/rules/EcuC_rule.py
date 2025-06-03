@@ -30,7 +30,7 @@ class EcuCRule:
         for validate_code in VALIDATE_MARK_LIST:
             try:
                 validate_rule_package = importlib.import_module(
-                    f"runtime.EcuC.config_plug_in.validation.rules.ECUC{validate_code}"
+                    f".ECUC{validate_code}", __package__
                 )
                 validate_rule_class = getattr(validate_rule_package, f"EcuC{validate_code}Rule")
                 bsw_module_rule_obj = validate_rule_class(self.logs, bsw_ecuc_cfg_class_dict)

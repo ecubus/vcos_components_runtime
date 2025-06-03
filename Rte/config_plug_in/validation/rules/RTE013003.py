@@ -15,7 +15,7 @@
 ############################################################################
 from func_module.validation.common.basic_rule import BasicRule, timing_decorator
 from func_module.health_monitor.logger import logger
-from Rte.config_plug_in.validation.rules.Rte_common import RteCommonData
+from .Rte_common import RteCommonData
 from func_module.validation.common.validation_def import ValidationData
 
 
@@ -84,7 +84,7 @@ class Rte013003Rule(BasicRule):
         ecuc_rte_dict = self.bsw_ecuc_cfg_class_dict['Rte']['ArPackages']['ActiveEcuC']['Rte']
         os_autosar = self.autosar_bsw_class['Os']
         ecuc_autosar = self.autosar_bsw_class['EcuC']
-        from Rte.config_plug_in.bsw_process.os_process import OsManager
+        from components.runtime.Rte.config_plug_in.bsw_process.os_process import OsManager
         os_tasks = OsManager.get_sorted_tasks(os_autosar, ecuc_autosar)
 
         for rte_key, rte_instance in ecuc_rte_dict.items():

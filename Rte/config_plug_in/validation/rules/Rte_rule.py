@@ -14,7 +14,7 @@
 # limitations under the License.
 ############################################################################
 from func_module.validation.common.validation_def import ValidationData, ExceptionRuleLog
-from runtime.Rte.config_plug_in.validation.rules.Rte_common import RteCommonData
+from .Rte_common import RteCommonData
 from func_module.health_monitor.logger import logger
 import importlib
 
@@ -64,7 +64,7 @@ class RteRule:
 
         for validate_code in VALIDATE_MARK_LIST:
             try:
-                validate_rule_package = importlib.import_module(f'Rte.config_plug_in.validation.rules.RTE{validate_code}')
+                validate_rule_package = importlib.import_module(f'.RTE{validate_code}', __package__)
                 validate_rule_class = getattr(validate_rule_package, f'Rte{validate_code}Rule')
                 bsw_module_rule_obj = validate_rule_class(self.logs, validation_data, rte_common_data)
                 # 校验当前校验规则的前置条件是否满足

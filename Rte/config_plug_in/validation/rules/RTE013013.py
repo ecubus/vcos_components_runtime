@@ -15,7 +15,7 @@
 ############################################################################
 from func_module.validation.common.basic_rule import BasicRule, timing_decorator
 from func_module.health_monitor.logger import logger
-from Rte.config_plug_in.validation.rules.Rte_common import RteCommonData, RteUtils
+from .Rte_common import RteCommonData, RteUtils
 from func_module.validation.common.validation_def import ValidationData
 
 
