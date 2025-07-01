@@ -649,6 +649,7 @@ class OsManager:
         if "OsSecondsPerTick" not in counter_info:
             logger.ui_error(f"the counter {counter_name} is without OsSecondsPerTick value!")
 
+        counter_info["path"] = os_counter_ref
         return counter_info
 
     @classmethod
@@ -760,6 +761,20 @@ class OsManager:
         if os_event_container is None:
             os_event_container = AutosarUtil.create_container_value(os_event_name, os_event_def, os_container)
             AutosarUtil.add_annotation_value(os_event_container, "IsAutomatic")
+
+        val = None
+        evt_name_upper = os_event_name.upper()
+        if evt_name_upper == f"Rte_Ev_Timeout_{task_info['OsTaskName']}".upper():
+            val = "0"
+        elif evt_name_upper == f"Rte_Ev_WaitPoint_{task_info['OsTaskName']}".upper():
+            val = "1"
+        if val:
+            params = os_event_container.PARAMETER_VALUES.ECUC_NUMERICAL_PARAM_VALUE
+            for param in params:
+                def_ref = get_definition_ref(param)
+                if def_ref.endswith("OsEventMask"):
+                    set_value(param, val)
+
         pass
 
     @classmethod
@@ -961,6 +976,49 @@ class OsManager:
         pass
 
     @classmethod
+    def add_all_rte_schedule_table_info(cls, os_autosar, mod_autosar, all_rte_schedule_table_cfg):
+        os_cfg = os_autosar.find("/ActiveEcuC/Os")
+        appl_containers = {
+            get_short_name(appl): appl
+            for appl in ScheduleTableManager.get_container_values(os_cfg)
+            if get_definition_ref(appl).endswith("OsApplication")
+        }
+        ref_def = mod_autosar.find("/AUTOSAR/EcucDefs/Os/OsApplication/OsAppScheduleTableRef")
+        appl_list = OsManager.get_os_sch_tbl_appl_list(os_autosar)
+        for sch_tbl in all_rte_schedule_table_cfg:
+            appl_cont = appl_containers.get(sch_tbl["osa"], None)
+            if not appl_cont:
+                continue
+
+            set_value_ref(AutosarUtil.set_reference(appl_cont.REFERENCE_VALUES, ref_def), f"/ActiveEcuC/Os/{sch_tbl['name']}")
+            OsManager.update_os_schedule_table(os_autosar, mod_autosar, sch_tbl, appl_list)
+
+
+    @classmethod
+    def remove_all_rte_schedule_table_info(cls, os_autosar):
+        os_cfg = os_autosar.find("/ActiveEcuC/Os")
+        appl_container_list = [
+            appl
+            for appl in ScheduleTableManager.get_container_values(os_cfg)
+            if get_definition_ref(appl).endswith("OsApplication")
+        ]
+        for i in range(len(os_cfg.CONTAINERS.ECUC_CONTAINER_VALUE) - 1, -1, -1):
+            container_value = os_cfg.CONTAINERS.ECUC_CONTAINER_VALUE[i]
+
+            def_ref: str = get_definition_ref(container_value)
+            if not def_ref.endswith("OsScheduleTable"):
+                continue
+
+            table_name = get_short_name(container_value)
+            if not AutosarUtil.is_automatic(container_value) or not table_name.startswith("Rte_St_"):
+                continue
+
+            OsManager.remove_os_sch_tbl(os_autosar, table_name)
+            OsManager.remove_appl_sch_tbl_ref(appl_container_list, table_name)
+        pass
+
+
+    @classmethod
     def remove_all_spinlock_info(cls, os_autosar):
         os_cfg = os_autosar.find("/ActiveEcuC/Os")
         for i in range(len(os_cfg.CONTAINERS.ECUC_CONTAINER_VALUE) - 1, -1, -1):
@@ -1097,28 +1155,17 @@ class OsManager:
         return asil_level, ecuc_partition, swc_inst_ref
 
     @classmethod
-    def get_os_timer_info(cls, timer_obj):
-        timer_info = {}
-        if not timer_obj or not get_definition_ref(timer_obj).endswith("OsCounter"):
-            return timer_info
-        if timer_obj.PARAMETER_VALUES:
-            for param_value in timer_obj.PARAMETER_VALUES.ECUC_NUMERICAL_PARAM_VALUE:
-                def_ref = get_definition_ref(param_value)
-                if def_ref.endswith("OsSecondsPerTick"):
-                    timer_info["seconds_per_tick"] = get_value(param_value)
-            # TODO: get other info
-        return timer_info
-
-    @classmethod
     def parse_os_autosar(cls, os_autosar, ecuc_autosar):
         if not os_autosar:
             return {}
         os_cfg = {}
         os_cfg["OsTasks"] = {}
         os_cfg["OsApplications"] = {}
+        os_cfg["os_counter"] = {}
         os_cfg["asil"] = {}
         os_cfg["os_alarms"] = {}
         os = os_autosar.find("/ActiveEcuC/Os")
+        os_core_counter_map = {}
         for container_value in os.CONTAINERS.ECUC_CONTAINER_VALUE:
             name = get_short_name(container_value)
             def_ref = get_definition_ref(container_value)
@@ -1185,21 +1232,12 @@ class OsManager:
 
                 os_app_counter_ref = cls.get_os_counter_ref(os_autosar, os_application["CoreId"])
                 counter_info = cls.get_counter_info(os_autosar, os_app_counter_ref)
+                if os_application["CoreId"] not in os_core_counter_map:
+                    os_core_counter_map[os_application["CoreId"]] = counter_info
+                elif counter_info["name"] != os_core_counter_map[os_application["CoreId"]]["name"]:
+                    logger.ui_error(f'multiple OsCounters found in core {os_application["CoreId"]}')
                 os_application.update({"OsAppCounter": counter_info})
                 pass
-            elif def_ref.endswith("OsAlarm"):
-                os_alarms = {"name": get_short_name(container_value)}
-                if container_value.REFERENCE_VALUES:
-                    for reference_value in container_value.REFERENCE_VALUES.ECUC_REFERENCE_VALUE:
-                        value_def_ref = get_definition_ref(reference_value)
-                        if value_def_ref.endswith("OsAlarmCounterRef"):
-                            counter_ref = get_value_ref(reference_value)
-                            if not counter_ref:
-                                continue
-                            os_alarms["OsAlarmCounterRef"] = counter_ref
-                            os_alarms["os_counter_info"] = cls.get_os_timer_info(container_value.find(counter_ref))
-                            continue
-                os_cfg["os_alarms"].update({os_alarms["name"]: os_alarms})
             else:
                 pass
         for osa_name, osa in os_cfg["OsApplications"].items():
@@ -1207,6 +1245,10 @@ class OsManager:
                 if not task_name:
                     continue
                 os_cfg["OsTasks"][task_name]["osa"] = osa_name
+            if "OsAppCounter" not in os_application:
+                osa["OsAppCounter"] = os_core_counter_map.get(osa["CoreId"], {})
+                if not osa["OsAppCounter"]:
+                    logger.ui_error(f'NO OsCounter found in core {osa["CoreId"]}')
         return os_cfg
 
     @classmethod
