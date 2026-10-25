@@ -54,7 +54,12 @@ class Rte013002Rule(BasicRule):
             if category_name not in category_name_list:
                 continue
             for swc_name, swc_instance in category_instance.items():
+                # PARAMETER-SW-COMPONENT-TYPE (and similar) have no runnables; skip rather than
+                # referencing unbound runnable_name after an empty loop.
+                if not swc_instance:
+                    continue
                 swc_mapped_status = False
+                runnable_name = ""
                 index = 0
                 for runnable_name, runnable_instance in swc_instance.items():
                     mapped_status = runnable_instance['mapped_status']

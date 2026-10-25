@@ -39,6 +39,51 @@ class Rte012002Rule(BasicRule):
 
         return True
 
+    def _event_refs_match(self, mapping_event_ref, runnable_event_ref) -> bool:
+        """Match RteEventRef against runnable EventRef (str or list)."""
+        if not mapping_event_ref:
+            return False
+        m = mapping_event_ref if isinstance(mapping_event_ref, str) else str(mapping_event_ref)
+        m_short = m.split("/")[-1]
+        refs = runnable_event_ref if isinstance(runnable_event_ref, (list, tuple)) else [runnable_event_ref]
+        for r in refs:
+            if not r:
+                continue
+            r_s = r if isinstance(r, str) else str(r)
+            if r_s == m or r_s.split("/")[-1] == m_short or m.endswith(r_s) or r_s.endswith(m):
+                return True
+        return False
+
+    def _is_mapped_in_ecuc(self, event_ref) -> bool:
+        """True if RteEventToTaskMapping maps this event to a task.
+
+        Task-mapping UI headers exclude OsTaskAutostart==TRUE (e.g. OsTask_Init), so
+        runnables mapped only to those tasks stay mapped_status=False in the tree even
+        though ECUC already has RteMappedToTaskRef. Treat such ECUC mappings as mapped.
+        """
+        try:
+            rte_root = self.bsw_ecuc_cfg_class_dict["Rte"]["ArPackages"]["ActiveEcuC"]["Rte"]
+        except (KeyError, TypeError, AttributeError):
+            return False
+        if not isinstance(rte_root, dict):
+            return False
+        for swc_inst in rte_root.values():
+            if not isinstance(swc_inst, dict):
+                continue
+            for item in swc_inst.values():
+                if not isinstance(item, dict):
+                    continue
+                defref = item.get("DefinitionRef") or ""
+                if "RteEventToTaskMapping" not in str(defref):
+                    continue
+                mapped_task = (item.get("RteMappedToTaskRef") or {}).get("ValueRef")
+                if not mapped_task:
+                    continue
+                ev = (item.get("RteEventRef") or {}).get("ValueRef")
+                if self._event_refs_match(ev, event_ref):
+                    return True
+        return False
+
     @timing_decorator
     def validation_run(self):
         category_name_list = ['Application Components']
@@ -54,6 +99,8 @@ class Rte012002Rule(BasicRule):
 
                     mapped_status = runnable_instance['mapped_status']
                     param_path = runnable_instance['event_ref']
+                    if not mapped_status and self._is_mapped_in_ecuc(param_path):
+                        mapped_status = True
                     if not mapped_status:
                         self.vlog(
                             self.validation_code, self.validation_summary,
