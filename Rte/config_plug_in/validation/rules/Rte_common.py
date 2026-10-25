@@ -297,6 +297,9 @@ class RteUtils:
                 continue
             cur_col = i % col_count
             task_info = task_mapping_instance.get_task_info_by_col(cur_col)
+            # PC / incomplete OsTask headers may omit CoreId — skip rather than KeyError.
+            if not isinstance(task_info, dict) or "CoreId" not in task_info:
+                continue
             core_id = task_info["CoreId"]
             item_data = table_item.item_data
             bind_item_list = task_mapping_instance.get_bind_item_list(item_data)
@@ -338,6 +341,8 @@ class RteUtils:
                 continue
             cur_col = i % col_count
             task_info = task_mapping_instance.get_task_info_by_col(cur_col)
+            if not isinstance(task_info, dict) or "CoreId" not in task_info:
+                continue
             core_id = task_info["CoreId"]
             item_data = table_item.item_data
             bind_item_list = task_mapping_instance.get_bind_item_list(item_data)

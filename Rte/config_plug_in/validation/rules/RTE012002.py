@@ -26,7 +26,7 @@ class Rte012002Rule(BasicRule):
         super().__init__()
         self.logs = logs
         self.validation_code = self.__class__.ruleset_name
-        self.validation_summary = "The runnable triggered by no-port event should be mapped"
+        self.validation_summary = ("RTE012002: Application runnable triggered by a non-port event (Timing/Init/Mode/Background/…) must be mapped to an OsTask via RteEventToTaskMapping.")
         self.rte_common_data = rte_common_data
         self.bsw_ecuc_cfg_class_dict = validation_data.bsw_ecuc_dict
         self.root_item = rte_common_data.get_root_item()
@@ -102,12 +102,28 @@ class Rte012002Rule(BasicRule):
                     if not mapped_status and self._is_mapped_in_ecuc(param_path):
                         mapped_status = True
                     if not mapped_status:
+                        rte_swc_path = f"/ActiveEcuC/Rte/{swc_name}"
                         self.vlog(
                             self.validation_code, self.validation_summary,
-                            f"swc category: {category_name}, swc name: {swc_name}, runnable name: {runnable_name}",
-                            param_path, "fail")
+                            (
+                                f"Runnable '{runnable_name}' in SWC '{swc_name}' ({category_name}) "
+                                f"has a non-port trigger event but is not mapped to any OsTask. "
+                                f"Create/update RteEventToTaskMapping under {rte_swc_path}: "
+                                f"set RteEventRef to the runnable's trigger event "
+                                f"({param_path}) and RteMappedToTaskRef to an OsTask "
+                                f"(prefer a non-autostart task so the mapping UI sees it)."
+                            ),
+                            param_path if param_path else rte_swc_path,
+                            "fail",
+                            [],
+                            [
+                                f"Map {swc_name}/{runnable_name} to an OsTask via "
+                                f"Rte/{swc_name}/RteEventToTaskMapping "
+                                f"(RteEventRef + RteMappedToTaskRef)."
+                            ],
+                        )
                     else:
                         self.vlog(
                             self.validation_code, self.validation_summary,
-                            f"swc category: {category_name}, swc name: {swc_name}, runnable name: {runnable_name}",
+                            f"swc={swc_name} runnable={runnable_name}: mapped.",
                             param_path, "pass")
