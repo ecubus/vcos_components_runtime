@@ -297,6 +297,9 @@ class RteUtils:
                 continue
             cur_col = i % col_count
             task_info = task_mapping_instance.get_task_info_by_col(cur_col)
+            # PC / incomplete OsTask headers may omit CoreId — skip rather than KeyError.
+            if not isinstance(task_info, dict) or "CoreId" not in task_info:
+                continue
             core_id = task_info["CoreId"]
             item_data = table_item.item_data
             bind_item_list = task_mapping_instance.get_bind_item_list(item_data)
@@ -338,6 +341,8 @@ class RteUtils:
                 continue
             cur_col = i % col_count
             task_info = task_mapping_instance.get_task_info_by_col(cur_col)
+            if not isinstance(task_info, dict) or "CoreId" not in task_info:
+                continue
             core_id = task_info["CoreId"]
             item_data = table_item.item_data
             bind_item_list = task_mapping_instance.get_bind_item_list(item_data)
@@ -576,7 +581,13 @@ class RteUtils:
             :return: task mapping 信息列表，包括 runnable 名称和所在位置, 绑定的 event 以及 component
         '''
         task_mapping_info = []
+        if task_mapping_inst is None or not task_name:
+            return task_mapping_info
         col_idx = task_mapping_inst.get_col_by_task_name(task_name)
+        # Autostart tasks are excluded from mapping table headers (get_sorted_tasks);
+        # treat missing column as no mapping rows instead of TypeError on int+None.
+        if col_idx is None:
+            return task_mapping_info
         row_cnt, col_cnt = task_mapping_inst.get_row_count(), task_mapping_inst.get_col_count()
         for row_idx in range(row_cnt):
             if not (table_item := task_mapping_inst.get_item(row_idx * col_cnt + col_idx)) or not table_item.item_data:

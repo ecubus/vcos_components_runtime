@@ -32,7 +32,11 @@ class Rte011002Rule(BasicRule):
         self.asw_autosar_dict = validation_data.autosar_asw_class
         self.bsw_ecuc_cfg_class_dict = validation_data.bsw_ecuc_dict
         self.validation_code = self.__class__.ruleset_name
-        self.validation_summary = "The runnables with same name but in different swc should not exist in one application"
+        self.validation_summary = (
+            "RTE011002: Runnables that share the same SYMBOL/shortName but live in different SWCs "
+            "must not be mapped into tasks of the same OsApplication "
+            "(rename the runnable SYMBOL, or map the SWCs to different OsApplications)."
+        )
         self.durable_init()
 
     def durable_init(self):
@@ -138,13 +142,33 @@ class Rte011002Rule(BasicRule):
             if self.__class__.validation_result:
                 self.vlog(
                     self.validation_code, self.validation_summary,
-                    f"runnable: {validation_data['runnable_name']}, swc: {param_list[index]['swc_name']}, application: {validation_data['application_name']}",
+                    f"runnable={validation_data['runnable_name']} swc={param_list[index]['swc_name']} "
+                    f"OsApplication={validation_data['application_name']}: unique in application.",
                     param_list[index]['param_path'], "pass")
             else:
+                rn = validation_data['runnable_name']
+                swc = param_list[index]['swc_name']
+                app = validation_data['application_name']
                 self.vlog(
                     self.validation_code, self.validation_summary,
-                    f"runnable: {validation_data['runnable_name']}, swc: {param_list[index]['swc_name']}, application: {validation_data['application_name']}",
-                    param_list[index]['param_path'], "fail")
+                    (
+                        f"Runnable SYMBOL/name '{rn}' from SWC '{swc}' is mapped into "
+                        f"OsApplication '{app}', but another SWC already maps a runnable "
+                        f"with the same name into that OsApplication. "
+                        f"Fix by (1) renaming the runnable SYMBOL in one SWC InternalBehavior, "
+                        f"or (2) moving one SWC task mapping to a different OsApplication "
+                        f"(change RteMappedToTaskRef / OsAppTaskRef ownership). "
+                        f"Do NOT leave two different SWCs sharing the same runnable name "
+                        f"inside one OsApplication."
+                    ),
+                    param_list[index]['param_path'],
+                    "fail",
+                    [],
+                    [
+                        f"Rename runnable '{rn}' in SWC '{swc}' (or the other colliding SWC), "
+                        f"OR map one of the SWCs to a different OsApplication than '{app}'."
+                    ],
+                )
 
         # 4）清空ruleset中的所有fact，为下一次校验做准备
         if validation_data_list:
