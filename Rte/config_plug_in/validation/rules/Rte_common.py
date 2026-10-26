@@ -298,7 +298,7 @@ class RteUtils:
             cur_col = i % col_count
             task_info = task_mapping_instance.get_task_info_by_col(cur_col)
             # PC / incomplete OsTask headers may omit CoreId — skip rather than KeyError.
-            if not isinstance(task_info, dict) or "CoreId" not in task_info:
+            if (not task_info) or (not hasattr(task_info, "get")) or ("CoreId" not in task_info):
                 continue
             core_id = task_info["CoreId"]
             item_data = table_item.item_data
@@ -341,7 +341,7 @@ class RteUtils:
                 continue
             cur_col = i % col_count
             task_info = task_mapping_instance.get_task_info_by_col(cur_col)
-            if not isinstance(task_info, dict) or "CoreId" not in task_info:
+            if (not task_info) or (not hasattr(task_info, "get")) or ("CoreId" not in task_info):
                 continue
             core_id = task_info["CoreId"]
             item_data = table_item.item_data
@@ -367,9 +367,9 @@ class RteUtils:
                 if core_id_list is None:
                     swc_core_dict[category_name].update({swc_name: []})
                 core_id_list = swc_core_dict[category_name].get(swc_name)
-                dict = {"RunnableName": runnable_name, "CoreId": core_id, "EventRef": eventref}
-                if dict not in core_id_list:
-                    core_id_list.append(dict)
+                core_entry = {"RunnableName": runnable_name, "CoreId": core_id, "EventRef": eventref}
+                if core_entry not in core_id_list:
+                    core_id_list.append(core_entry)
         return swc_core_dict
 
     @classmethod
